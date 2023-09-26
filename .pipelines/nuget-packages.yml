@@ -1,6 +1,12 @@
 ## This generates an ever-increasing number based on the date and build. Useful for CI\CD scenario's.
 name: $(date:yyyy.M.d)$(rev:.r) 
 
+parameters:
+- name: publishPreRelease
+  displayName: 'Publish pre-release package'
+  type: boolean
+  default: false
+
 ## GITHUB: specify the Pull Request Builds in yaml as below.
 ## Azure Devops: setup Pull Request Builds via "manage repositories" - "Branch Policies" in the Azure Devops UI instead. 
 pr:
@@ -51,6 +57,7 @@ stages:
   - template: yaml/jobs/AzDOArtifacts_publishNugetPackage.yml@yamlTemplates
     parameters:
       azureArtifactsTargetFeed: 'Demo Environment (Scrum)/Packages'
+      publishPreRelease: ${{ parameters.publishPreRelease }}
       buildSteps: 
       - task: UseDotNet@2
         displayName: 'Use dotnet 6'
