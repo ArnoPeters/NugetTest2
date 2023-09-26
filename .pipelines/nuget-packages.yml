@@ -27,9 +27,9 @@ resources:
   repositories:
     - repository: yamlTemplates
       type: github
-      name: "UserName/RepoName" # TODO: github Username/Reponame
-      endpoint: #AzureDevopsGithubEndpointName under 'Project -> Service Connections'
-      ref: 'refs/heads/main'
+      name: "ArnoPeters/Starterkit_AzureDevops"
+      endpoint: 'ArnoPeters'
+      ref: 'refs/heads/Reorg'
 
 variables:
   # Files included in the variables section can ONLY have a 'variables' section, nothing more.
@@ -48,16 +48,16 @@ stages:
 - stage: Build
   displayName: Build and Publish nuget package 
   jobs:
-  - template: AzDO/yaml/jobs/AzDOArtifacts_publishNugetPackage.yml@yamlTemplates
+  - template: yaml/jobs/AzDOArtifacts_publishNugetPackage.yml@yamlTemplates
     parameters:
-      azureArtifactsTargetFeed: '#TeamProjectName/#ArtifactsFeedName' # TODO: set target team project and artifacts feed where the nuget files will be added
+      azureArtifactsTargetFeed: 'Demo Environment (Scrum)/Packages'
       buildSteps: 
       - task: UseDotNet@2
         displayName: 'Use dotnet 6'
         inputs:
           version: '6.0.x'
-      - template: AzDO/yaml/steps/buildAndTest.yml@yamlTemplates
+      - template: yaml/steps/buildAndTest.yml@yamlTemplates
         parameters:
-          azureArtifactsSourceFeed: '#TeamProjectName/#ArtifactsFeedName' # TODO: set source team project and artifacts feed where the build will get nuget packages. This can be the same as the target.
+          azureArtifactsSourceFeed: 'Demo Environment (Scrum)/Packages'
           runSettingsFile: 'src/.runsettings'
 
