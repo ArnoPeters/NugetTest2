@@ -1,0 +1,2 @@
+# Always ignore this visual studio folder, regardless of what this repo is used for.
+.vs 
