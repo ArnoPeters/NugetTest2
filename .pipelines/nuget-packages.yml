@@ -1,0 +1,63 @@
+## This generates an ever-increasing number based on the date and build. Useful for CI\CD scenario's.
+name: $(date:yyyy.M.d)$(rev:.r) 
+
+## GITHUB: specify the Pull Request Builds in yaml as below.
+## Azure Devops: setup Pull Request Builds via "manage repositories" - "Branch Policies" in the Azure Devops UI instead. 
+pr:
+  branches:
+    include:
+    - main
+    
+trigger:
+  branches:
+    include: 
+    - main
+  paths:
+    include: 
+    - /.pipelines/*
+    - /src/*
+    exclude:
+    - '/.vscode/*'
+    - '/docs/*'
+    - '/*.md'
+    - '**/.editorconfig'
+    - '**/.gitignore'
+
+resources:
+  repositories:
+    - repository: yamlTemplates
+      type: github
+      name: "UserName/RepoName" # TODO: github Username/Reponame
+      endpoint: #AzureDevopsGithubEndpointName under 'Project -> Service Connections'
+      ref: 'refs/heads/main'
+
+variables:
+  # Files included in the variables section can ONLY have a 'variables' section, nothing more.
+  - template: build/authors.yml
+  #- group: '#GroupName' # Groups are linked to Azure Devops -> Pipelines > Library > Variable Group. Keep secrets there instead of in the actual source. 
+  
+  # Other values as key-value pair, or Groups won't work. 
+  # https://learn.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml#use-a-variable-group
+  #- name: Key 
+  #  value: 'Value'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and Publish nuget package 
+  jobs:
+  - template: AzDO/yaml/jobs/AzDOArtifacts_publishNugetPackage.yml@yamlTemplates
+    parameters:
+      azureArtifactsTargetFeed: '#TeamProjectName/#ArtifactsFeedName' # TODO: set target team project and artifacts feed where the nuget files will be added
+      buildSteps: 
+      - task: UseDotNet@2
+        displayName: 'Use dotnet 6'
+        inputs:
+          version: '6.0.x'
+      - template: AzDO/yaml/steps/buildAndTest.yml@yamlTemplates
+        parameters:
+          azureArtifactsSourceFeed: '#TeamProjectName/#ArtifactsFeedName' # TODO: set source team project and artifacts feed where the build will get nuget packages. This can be the same as the target.
+          runSettingsFile: 'src/.runsettings'
+

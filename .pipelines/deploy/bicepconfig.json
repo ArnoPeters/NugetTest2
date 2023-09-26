@@ -1,0 +1,16 @@
+{
+	"moduleAliases": {
+		"ts": {
+			"SharedTemplates": {
+				"subscription": "TODO", //use subscription ID (guid)
+				"resourceGroup": "TODO"
+			}
+		}
+	},
+	"cloud": {
+		"currentProfile": "AzureCloud",
+		"credentialPrecedence": [
+			"AzureCLI"
+		]
+	}
+}

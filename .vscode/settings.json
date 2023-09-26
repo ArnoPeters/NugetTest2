@@ -1,0 +1,8 @@
+{
+  // Custom workspace settings for visual studio code.
+  "explorer.copyRelativePathSeparator": "/",
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "**/.pipelines/**/*.json": "jsonc"
+  }
+}
